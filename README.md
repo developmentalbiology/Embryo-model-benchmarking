@@ -3,7 +3,7 @@
 ## Overview
 This repository provides resources for studying human embryonic development from peri-implantation to gastrulation. This critical period is key to understanding cell lineage specification and tissue generation. With the growing use of stem-cell-based embryo models replicating this stage *in vitro*, this work addresses the pressing need for well-curated, integrated post-implantation cell references.
 
-![overview](Embryo-model-benchmarking/11.portal_images/portal_image.jpg)
+![overview](11.portal_images/portal_image.jpg)
 
 ## Highlights
 - **Comprehensive Reference Atlases**:
