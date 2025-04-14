@@ -10,7 +10,7 @@ library(gplots)
 library(tidyverse)
 
 
-setwd("D:/xueying-work/afterPHD/Liu-lab/project1-embryo benchmarking/2024April/manuscript/final code/20250117_label_transfer_Weatherbee_comparasion")
+setwd("D:/xueying-work/afterPHD/Liu-lab/project1-embryo benchmarking/2024April/manuscript/final code/20250319_weatherbee_label_transfer_methods")
 outputDir = getwd()
 
 
@@ -25,6 +25,23 @@ weatherbee_sum <- garfield[,c("X","cell_assignment", "transferred_final_anno_unf
 scarches <- read.csv("human_Weatherbee_scArches.csv")
 scarches_sum <- scarches[,c("X", "scArches_final_anno_pre" ,"scArches_final_lineage_pre"),drop=FALSE]
 
+#load scPoli result
+scpoli <- read.csv("D:/xueying-work/afterPHD/Liu-lab/project1-embryo benchmarking/2024April/manuscript/final code/20250225-scPoli_weatherbee_GPU/figures_final_lineage/corrected_processed_Weatherbee.h5ad_scPoli_query.csv")
+scpoli_2 <- read.csv("D:/xueying-work/afterPHD/Liu-lab/project1-embryo benchmarking/2024April/manuscript/final code/20250225-scPoli_weatherbee_GPU/figures_final_anno/corrected_processed_Weatherbee.h5ad_scPoli_query.csv")
+
+# Merge by rowname and manually add unique columns
+scpoli_2 <- scpoli_2[match(scpoli$X, scpoli_2$X),]
+scpoli_2 <- scpoli_2[,c("final_anno_pred", "final_anno_uncert")]
+scpoli <- cbind(scpoli, scpoli_2)
+
+scpoli_sum <- scpoli[,c("X","final_anno_pred", "final_lineage_pred" ),drop=FALSE]
+
+## fix scpoli cell names
+scpoli_sum$X <- gsub("-1$", "", scpoli_sum$X)
+
+## check whether cell names match
+setdiff(scpoli_sum$X, scarches_sum$X)   
+
 #load scGPT result
 scgpt <- read.csv("human_Weatherbee_scgpt.csv")
 scgpt_sum <- scgpt[,c("X", "scgpt_final_anno_pre", "scgpt_final_lineage_pre"),drop=FALSE]
@@ -34,25 +51,32 @@ querymap <- read.csv("human_ref_weatherbee_querymap.csv")
 
 #merge table
 merged_all <- merge(weatherbee_sum, scarches_sum, by = 'X', all = TRUE)
+merged_all <- merge(merged_all, scpoli_sum, by = 'X', all = TRUE)
 merged_all <- merge(merged_all, scgpt_sum, by = 'X', all = TRUE)
 merged_all <- merge(merged_all, querymap, by = 'X', all = TRUE)
 
 
-#only focus on hypo/VE lineage to calculate prediction metrics
-merged_all <- merged_all[which(merged_all$cell_assignment%in% c("HYPO/VE","L-EPI","AM-3" )  ),] 
+#only focus on selected lineage to calculate prediction metrics
+merged_all <- merged_all[which(merged_all$cell_assignment%in% c("HYPO/VE","L-EPI","AM-3","MESO-1","MESO-2","EXMC" )  ),] 
 
 
 # Define a function to rename values in a column
 rename_values <- function(column) {
-  column[column %in% c("AVE","VE/YE", "Hypoblast","YS.Endoderm_1","Gut", "ExE_endo", "DE","Endoderm")] <- "HYPO/VE"
-  column[column %in% c( "Epi_1","Epi_2", "Epi_3", "Epi_4","epi","Ectoderm")] <- "L-EPI"
-  column[column %in% c("Amniotic_epi", "Amnion","non_neuro_ecto")] <- "AM-3"
+  column[column %in% c("AVE","VE/YE", "Hypoblast", "ExE_endo", "DE","Endoderm","YS.Endoderm_1")] <- "HYPO/VE"
+  column[column %in% c( "Epi_1","Epi_2", "Epi_3", "Epi_4","epi")] <- "L-EPI"
+  column[column %in% c( "Amnion","Ectoderm_1","non_neuro_ecto")] <- "AM-3"
+  column[column %in% c('Primitive.streak', 'Nascent mesoderm', "Gastru")] <- "MESO-1"
+  column[column %in% c("Emergent mesoderm", "Intermediate mesoderm", "Paraxial mesoderm","Lateral plate mesoderm_1","Rostral mesoderm","Caudal mesoderm","mesoderm")] <- "MESO-2"
+  column[column %in% c('Allantois_1', 'Allantois_2', 'pre-YS.mesoderm', 'YS.mesoderm',  'Exe.endothelium',"Exe_meso" )] <- "EXMC"
+  
+  
   return(column)
 }
 
 
+
 # Apply the renaming function to the relevant columns
-columns_to_rename <- colnames(merged_all)[3:10]
+columns_to_rename <- colnames(merged_all)[3:12]
 
 for (col in columns_to_rename) {
   merged_all[[col]] <- rename_values(merged_all[[col]])
@@ -125,8 +149,8 @@ write.csv(results_df, file = "human_ref_summary.csv")
 #########plot##################
 
 results_df <- as.data.frame(results_df)
-results_df$method <- c("Garfield","Garfield","scArches","scArches","scGPT","scGPT","QueryMap","QueryMap")
-results_df$label <- c("celltype","lineage","celltype","lineage","celltype","lineage","celltype","lineage")
+results_df$method <- c("Garfield","Garfield","scArches","scArches","scPoli","scPoli","scGPT","scGPT","QueryMap","QueryMap")
+results_df$label <- c("celltype","lineage","celltype","lineage","celltype","lineage","celltype","lineage","celltype","lineage")
 
 results_df <- results_df[,c("Accuracy", "Precision","method","label")]
 
@@ -136,29 +160,53 @@ results_df <- results_df %>%
                names_to = "Metric", 
                values_to = "Value")
 
+# Ensure 'Value' is numeric
+results_df$Value <- as.numeric(results_df$Value) 
 
 # Define the color palette you want to use
-color_palette <- c("Garfield" = "#FDB462", "QueryMap" = "#B2DF8A", "scArches" = "#A6CEE3", "scGPT" = "#7570B3")
+color_palette <- c("Garfield" = "#FDB462","scArches" = "#A6CEE3", "scPoli" = "#F898CB", "QueryMap" = "#B2DF8A",  "scGPT" = "#7570B3")
 
 # Plot
-results_df$Value <- as.numeric(results_df$Value)
-results_df$method <- factor(results_df$method, levels = c("Garfield","scArches","QueryMap","scGPT"))
+# Separate the data into lineage and celltype subsets
+lineage_df <- results_df %>% filter(label == "lineage")
+celltype_df <- results_df %>% filter(label == "celltype")
 
-p<- ggplot(results_df, aes(x = Metric, y = Value, fill = method)) +
-  geom_col(position = position_dodge()) +
-  facet_wrap(~ label, strip.position = "top") +  # Use 'label' for facetting
-  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
-  scale_fill_manual(values = color_palette) +
-  theme_classic() +
-  theme(
-    strip.placement = "outside",
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  ) +
-  labs(x = "", y = "Mean Value")
+# Function to generate bar plots
+generate_barplots <- function(data, label_name) {
+  metrics <- unique(data$Metric)  # Get unique metrics (Accuracy, Precision)
+  
+  for (metric in metrics) {
+    # Subset the data for the current metric
+    subset_df <- data %>% filter(Metric == metric)
+    
+    # Order 'method' by 'Value' in descending order
+    subset_df$method <- reorder(subset_df$method, -subset_df$Value)  # Reorder methods
+    
+    # Create the plot
+    p <- ggplot(subset_df, aes(x = method, y = Value, fill = method)) +
+      geom_col(position = position_dodge(width = 0.8)) +  # Adjust dodge width for better spacing
+      scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+      scale_fill_manual(values = color_palette) +  # Use the defined color palette
+      theme_classic() +
+      theme(
+        axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
+        legend.position = "none",  # Remove legend since it's redundant
+        panel.grid.major = element_blank(),  # Remove grid lines
+        panel.grid.minor = element_blank()
+      ) +
+      labs(title = paste(metric, "Scores for", label_name), x = "", y = "Mean Value")  # Add title and axis labels
+    
+    # Save the plot as a PDF file
+    pdf_file <- paste0(metric, "_", label_name, "_barplot.pdf")
+    ggsave(filename = pdf_file, plot = p, width = 8, height = 6, device = "pdf")
+    
+    # Display the plot
+    print(p)
+  }
+}
 
-p
+# Generate bar plots for lineage
+generate_barplots(lineage_df, "Lineage")
 
-# Save the plot as a PDF
-ggsave("label_reansfer_human_ref.pdf", plot = p, device = "pdf", width = 8, height = 6)
-
-
+# Generate bar plots for celltype
+generate_barplots(celltype_df, "Celltype")

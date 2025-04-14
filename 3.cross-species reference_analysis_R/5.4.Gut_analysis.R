@@ -99,18 +99,18 @@ avgexp <- avgexp %>% as.data.frame()
 
 
 features = c("SOX17","GATA4","PDGFRA","FOXA2", 
-             "FOXA1", "HOXA10", "CXCL12", "CDX2")  
+             "FOXA1", "HOXA10", "CXCL12", "CDX2")  #EPCAM, ID3,"CLDN6","APOA2","VIM", "CDX1","HNF1B", "HNF4A", "HOXB9"
 
 
 # calculate de genes
-#DE_Gut.markers <- FindMarkers(human_sub, ident.1 = "Gut", ident.2 = "DE")
+DE_Gut.markers <- FindMarkers(human_sub, ident.1 = "Gut", ident.2 = "DE")
 
-#DE_Gut.markers %>%
-#  dplyr::filter(p_val_adj < 0.0001) %>%
-#  dplyr::filter(abs(avg_log2FC) > 2) -> DE_Gut.markers
+DE_Gut.markers %>%
+  dplyr::filter(p_val_adj < 0.0001) %>%
+  dplyr::filter(abs(avg_log2FC) > 2) -> DE_Gut.markers
 
 
-#features =rownames(DE_Gut.markers)
+features =rownames(DE_Gut.markers)
 
 
 plot_gene <- avgexp[features,]
