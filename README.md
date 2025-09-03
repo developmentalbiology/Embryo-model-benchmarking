@@ -3,7 +3,7 @@
 ## Overview
 This repository serves as a central portal for resources developed in this project, providing code to reproduce the results presented in the manuscript. This resource focuses on the critical peri-implantation to gastrulation period of human embryonic development, which is fundamental to understanding cell lineage specification and tissue formation. With the rapid advancement of stem-cell-based embryo models that mimic this stage *in vitro*, there is a growing need for well-curated, integrated post-implantation reference atlases. This project addresses that need by providing a comprehensive suite of tools.
 
-![overview](12.portal_images/portal_image.jpg)
+![overview](portal_image.jpg)
 
 ## Highlights
 - **Comprehensive Reference Atlases**:
