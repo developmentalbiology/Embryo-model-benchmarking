@@ -22,7 +22,7 @@ This repository serves as a central portal for resources developed in this proje
 - Automated annotation and integration of diverse transcriptomic datasets.
 
 ## Relevant Resources
- - The three reference cell atlases used in this study are publicly available through the China National GeneBank Database (CNGBdb) under the accession code [PRJCA045416](https://ngdc.cncb.ac.cn/gsa/browse/CRA012936). A dedicated repository for processed data can be accessed via [https://github.com/developmentalbiology/Post-implantation-developmental-reference](https://github.com/developmentalbiology/Post-implantation-developmental-reference).
+ - The three reference cell atlases used in this study are publicly available through the National Genomics Data Center (NGDC) under OMIX ID [OMIX011658](https://ngdc.cncb.ac.cn/omix/release/OMIX011658). A dedicated repository for processed data can be accessed via [https://github.com/developmentalbiology/Post-implantation-developmental-reference](https://github.com/developmentalbiology/Post-implantation-developmental-reference).
  - The scDevelopment AI agent repository can be accessed via [https://github.com/developmentalbiology/scDevelopment-AI-agent](https://github.com/developmentalbiology/scDevelopment-AI-agent).
 
 ## Contact
