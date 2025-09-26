@@ -22,8 +22,15 @@ This repository serves as a central portal for resources developed in this proje
 - Automated annotation and integration of diverse transcriptomic datasets.
 
 ## Relevant Resources
- - The three reference cell atlases used in this study are publicly available through the National Genomics Data Center (NGDC) under OMIX ID [OMIX011658](https://ngdc.cncb.ac.cn/omix/release/OMIX011658). A dedicated repository for processed data can be accessed via [https://github.com/developmentalbiology/Post-implantation-developmental-reference](https://github.com/developmentalbiology/Post-implantation-developmental-reference).
- - The scDevelopment AI agent repository can be accessed via [https://github.com/developmentalbiology/scDevelopment-AI-agent](https://github.com/developmentalbiology/scDevelopment-AI-agent).
+
+- The three reference cell atlases used in this study are publicly available through the National Genomics Data Center (NGDC) under OMIX accession [OMIX011658](https://ngdc.cncb.ac.cn/omix/release/OMIX011658). Processed data and analysis files are hosted in a dedicated repository:  
+  [https://github.com/developmentalbiology/Post-implantation-developmental-reference](https://github.com/developmentalbiology/Post-implantation-developmental-reference)
+
+- The **scDevelopment AI agent**—a tool for developmental cell annotation and query—is available at:  
+  [https://github.com/developmentalbiology/scDevelopment-AI-agent](https://github.com/developmentalbiology/scDevelopment-AI-agent)
+
+- Step-by-step tutorials for applying our label transfer and mapping workflows can be found here:  
+  [https://github.com/developmentalbiology/mapping-to-Post-implantation-developmental-reference](https://github.com/developmentalbiology/mapping-to-Post-implantation-developmental-reference)
 
 ## Contact
 If you have any questions, please create an issue or contact [fanxueying@westlake.edu.cn](mailto:fanxueying@westlake.edu.cn).
