@@ -129,7 +129,7 @@ percentage$reanno_brief <- factor(percentage$reanno_brief, levels = crossspecies
 # Define your custom color palette
 color_species <- c("Homo sapiens"="#1F77B4", "Macaca fascicularis" = "#FF7F0E")
 
-
+# stacked bar plot
 p <- ggplot(data=percentage, aes(x=reanno_brief, y=perct, fill=species)) +
   geom_bar(stat="identity") +
   ggtitle("reanno") +
@@ -138,6 +138,29 @@ p <- ggplot(data=percentage, aes(x=reanno_brief, y=perct, fill=species)) +
 p
 # Save the plot as a PDF
 ggsave("crossspeces_ref_species_summary.pdf", plot = p, device = "pdf", width = 7, height = 4)
+
+# separate bar plot
+p <- ggplot(data = percentage, aes(x = reanno_brief, y = perct)) +
+  geom_bar(stat = "identity", aes(fill = species), show.legend = FALSE) +
+  facet_grid(species ~ ., scales = "free_y", space = "free_y") +  # Species in rows
+  ggtitle("Cell Type Composition by Species") +
+  scale_fill_manual(values = color_species) + 
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(x = "Cell Type", y = "Percentage") +
+  theme_bw() +
+  theme(
+    text = element_text(size = 10),
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+    axis.text.y = element_text(size = 8),
+    strip.text.y = element_text(size = 10, face = "bold", angle = 90),  # Horizontal facet labels
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold")
+  )
+
+p
+
+ggsave("crossspeces_ref_species_summary_2.pdf", plot = p, device = "pdf", width = 9, height = 6)
 
 
 # ============================================================================
